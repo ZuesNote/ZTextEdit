@@ -57,6 +57,8 @@ add_executable(ZTextEdit
     ./gui/zmainwindow.cpp
 
     #core
+    ./core/zrange.h
+    ./core/zrange.cpp
 )
 
 target_link_libraries(ZTextEdit Qt5::Widgets Qt5::Core Qt5::GuiPrivate Qt5::CorePrivate Qt5::Network)
