@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-project(ZuesNote)
+project(ZTextEdit)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -37,7 +37,7 @@ get_target_property(QtCore_location Qt5::Core LOCATION)
 find_package(Qt5 COMPONENTS Network REQUIRED)
 get_target_property(QtCore_location Qt5::Network LOCATION)
 
-add_executable(ZuesNote
+add_executable(ZTextEdit
     zuesmainwindow.h
     zuesmainwindow.cpp
     zuesedit.h
@@ -47,9 +47,19 @@ add_executable(ZuesNote
     zuesrange.h
     zuesrange.cpp
 	main.cpp
+
+    #include
+    
+    #gui
+    ./gui/ztextedit.h
+    ./gui/ztextedit.cpp
+    ./gui/zmainwindow.h
+    ./gui/zmainwindow.cpp
+
+    #core
 )
 
-target_link_libraries(ZuesNote Qt5::Widgets Qt5::Core Qt5::GuiPrivate Qt5::CorePrivate Qt5::Network)
+target_link_libraries(ZTextEdit Qt5::Widgets Qt5::Core Qt5::GuiPrivate Qt5::CorePrivate Qt5::Network)
 
 #拷贝对应的dll目录到
 file(GLOB QT_DLL "${CMAKE_PREFIX_PATH}/*d.dll")
