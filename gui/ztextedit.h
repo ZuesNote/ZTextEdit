@@ -29,6 +29,7 @@ public:
 
 private:
 	bool handledNumerSign(QKeyEvent* event);
+	bool handledSpace(QKeyEvent* event);
 
 
 private:
