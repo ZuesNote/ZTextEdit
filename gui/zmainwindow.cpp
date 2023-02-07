@@ -5,8 +5,8 @@
 ZMainWindow::ZMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
-//	ZTextEdit* kmd = new ZTextEdit(this);
-//	setCentralWidget(kmd);
+	ZTextEdit* kmd = new ZTextEdit(this);
+	setCentralWidget(kmd);
 	resize(800, 800);
 }
 
