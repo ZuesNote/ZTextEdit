@@ -47,6 +47,7 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 	QTextBlock textBlock = textCursor.block();
 
 	int nPositionInBlock = textCursor.positionInBlock();
+	int nBlockPosition = textBlock.position();
 	QString strBlockText = textBlock.text();
 
 	Qt::KeyboardModifiers modifiers = event->modifiers();
@@ -59,17 +60,15 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 			textCursor.beginEditBlock();
 			textCursor.insertText(" ");
 
-			textCursor.setPosition(0);
-			textCursor.setPosition(2, QTextCursor::KeepAnchor);
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 2, QTextCursor::KeepAnchor);
 
-			QFont font;
-			font.setBold(true);
-			font.setPixelSize(48);
 
 			//setBlockFormat必须得清空以后才能设置成功
 
 			QTextCharFormat charFormat = textCursor.charFormat();
-			charFormat.setFont(font);
+			charFormat.setFontPointSize(48);
+			charFormat.setFontStretch(60);
 			textCursor.setCharFormat(charFormat);
 
 			textCursor.endEditBlock();
