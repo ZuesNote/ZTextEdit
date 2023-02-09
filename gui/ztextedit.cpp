@@ -1,4 +1,5 @@
 ﻿#include "ztextedit.h"
+#include "../core/ztextblockuserdata.h"
 
 #include <QTextCursor>
 #include <QTextDocument>
@@ -15,11 +16,31 @@
 ZTextEdit::ZTextEdit(QWidget *parent)
 	: QTextEdit(parent)
 {
-
+	initFormat();
 }
 
 ZTextEdit::~ZTextEdit()
 {
+}
+
+void ZTextEdit::setDefaultHeading1Format()
+{
+}
+
+void ZTextEdit::initFormat()
+{
+	{
+		QFont font;
+		font.setPixelSize(11);
+		m_normalCharFormat.setFont(font);
+	}
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(28);
+		m_heading1CharFormat.setFont(font);
+	}
+
 }
 
 bool ZTextEdit::handledNumerSign(QKeyEvent* event)
@@ -31,7 +52,7 @@ bool ZTextEdit::handledNumerSign(QKeyEvent* event)
 	int nPositionInBlock = textCursor.positionInBlock();
 	QString strBlockText = textBlock.text();
 
-	if (strBlockText.isEmpty())
+	if (nPositionInBlock == 0)
 	{
 		textCursor.insertText("#");
 		m_inputState = InputState::PreNumerSign;
@@ -43,8 +64,24 @@ bool ZTextEdit::handledNumerSign(QKeyEvent* event)
 bool ZTextEdit::handledSpace(QKeyEvent* event)
 {
 	//todo 获取block的状态
+
+
+
 	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
 	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+		if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading1)
+			return false;
+	}
 
 	int nPositionInBlock = textCursor.positionInBlock();
 	int nBlockPosition = textBlock.position();
@@ -53,31 +90,31 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 	Qt::KeyboardModifiers modifiers = event->modifiers();
 	if (modifiers == Qt::NoModifier)
 	{
-		if (m_inputState == InputState::PreNumerSign && strBlockText.size() == 1 && strBlockText == "#")
+		if (m_inputState == InputState::PreNumerSign && strBlockText.startsWith("#"))
 		{
 			m_inputState = InputState::Normal;
 
 			textCursor.beginEditBlock();
-			textCursor.insertText(" ");
 
 			textCursor.setPosition(nBlockPosition);
-			textCursor.setPosition(nBlockPosition + 2, QTextCursor::KeepAnchor);
-
+			textCursor.setPosition(nBlockPosition + 1, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
 
 			//setBlockFormat必须得清空以后才能设置成功
-
-			QTextCharFormat charFormat = textCursor.charFormat();
-			charFormat.setFontPointSize(48);
-			charFormat.setFontStretch(60);
-			textCursor.setCharFormat(charFormat);
+			textCursor.setBlockCharFormat(m_heading1CharFormat);
 
 			textCursor.endEditBlock();
 
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading1);
+			textBlock.setUserData(userData);
 			return true;
-			//this->setTextCursor(textCursor);
-			//todo 处理标题1的format
 		}
 	}
+	return false;
+}
+
+bool ZTextEdit::handledEnter(QKeyEvent* event)
+{
 	return false;
 }
 
@@ -102,6 +139,7 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Return:
 		Q_FALLTHROUGH();
 	case Qt::Key_Enter:
+		bHandled = handledEnter(event);
 		break;
 	default:
 		break;

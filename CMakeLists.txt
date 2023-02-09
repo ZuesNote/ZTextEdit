@@ -38,14 +38,6 @@ find_package(Qt5 COMPONENTS Network REQUIRED)
 get_target_property(QtCore_location Qt5::Network LOCATION)
 
 add_executable(ZTextEdit
-    zuesmainwindow.h
-    zuesmainwindow.cpp
-    zuesedit.h
-    zuesedit.cpp
-    zuesmdwidget.h
-    zuesmdwidget.cpp
-    zuesrange.h
-    zuesrange.cpp
 	main.cpp
 
     #include
@@ -57,8 +49,8 @@ add_executable(ZTextEdit
     ./gui/zmainwindow.cpp
 
     #core
-    ./core/zrange.h
-    ./core/zrange.cpp
+    ./core/ztextblockuserdata.h
+    ./core/ztextblockuserdata.cpp
 )
 
 target_link_libraries(ZTextEdit Qt5::Widgets Qt5::Core Qt5::GuiPrivate Qt5::CorePrivate Qt5::Network)
