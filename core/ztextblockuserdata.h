@@ -13,8 +13,10 @@ public:
 		Heading2 = 2,
 		Heading3 = 3,
 		Heading4 = 4,
-		Code = 5,
-		Image = 6,
+		Heading5 = 5,
+		Heading6 = 6,
+		Code = 7,
+		Image = 8,
 	};
 	explicit ZTextBlockUserData(TextBlockType type);
 	virtual ~ZTextBlockUserData();

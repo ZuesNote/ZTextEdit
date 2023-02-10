@@ -8,9 +8,7 @@
 #include <QAbstractTextDocumentLayout>
 #include <QKeyEvent>
 
-#if _DEBUG
 #include <QDebug>
-#endif
 
 
 ZTextEdit::ZTextEdit(QWidget *parent)
@@ -31,16 +29,53 @@ void ZTextEdit::initFormat()
 {
 	{
 		QFont font;
-		font.setPixelSize(11);
+		font.setPixelSize(18);
+		font.setFamily(QString::fromUtf8("等线"));
 		m_normalCharFormat.setFont(font);
+		this->document()->setDefaultFont(font);
 	}
 	{
 		QFont font;
 		font.setBold(true);
 		font.setPixelSize(28);
 		m_heading1CharFormat.setFont(font);
+		m_heading1CharFormat.setBackground(Qt::red);
+	}
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(27);
+		m_heading2CharFormat.setFont(font);
+		m_heading2CharFormat.setBackground(Qt::green);
+	}
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(26);
+		m_heading3CharFormat.setFont(font);
+		m_heading3CharFormat.setBackground(Qt::blue);
 	}
 
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(25);
+		m_heading4CharFormat.setFont(font);
+	}
+
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(24);
+		m_heading5CharFormat.setFont(font);
+	}
+
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(23);
+		m_heading6CharFormat.setFont(font);
+	}
 }
 
 bool ZTextEdit::handledNumerSign(QKeyEvent* event)
@@ -63,10 +98,6 @@ bool ZTextEdit::handledNumerSign(QKeyEvent* event)
 
 bool ZTextEdit::handledSpace(QKeyEvent* event)
 {
-	//todo 获取block的状态
-
-
-
 	QTextCursor textCursor = this->textCursor();
 	if (textCursor.isNull())
 		return false;
@@ -79,8 +110,11 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
 	if (zBlockUserData != nullptr)
 	{
-		if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading1)
-			return false;
+		//if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading1 
+		//	|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading2
+		//	|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading3
+		//	)
+		//	return false;
 	}
 
 	int nPositionInBlock = textCursor.positionInBlock();
@@ -90,7 +124,7 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 	Qt::KeyboardModifiers modifiers = event->modifiers();
 	if (modifiers == Qt::NoModifier)
 	{
-		if (m_inputState == InputState::PreNumerSign && strBlockText.startsWith("#"))
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 1 && strBlockText.startsWith("#"))
 		{
 			m_inputState = InputState::Normal;
 
@@ -109,6 +143,47 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 			textBlock.setUserData(userData);
 			return true;
 		}
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 2 && strBlockText.startsWith("##"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 2, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			textCursor.setBlockCharFormat(m_heading2CharFormat);
+
+			textCursor.endEditBlock();
+
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading2);
+			textBlock.setUserData(userData);
+
+			return true;
+		}
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 3 && strBlockText.startsWith("###"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 3, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			textCursor.setBlockCharFormat(m_heading3CharFormat);
+
+			textCursor.endEditBlock();
+
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading3);
+			textBlock.setUserData(userData);
+
+			return true;
+		}
+
 	}
 	return false;
 }
