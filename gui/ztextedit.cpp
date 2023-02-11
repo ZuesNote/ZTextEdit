@@ -183,6 +183,66 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 
 			return true;
 		}
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 4 && strBlockText.startsWith("####"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 4, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			textCursor.setBlockCharFormat(m_heading4CharFormat);
+
+			textCursor.endEditBlock();
+
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading4);
+			textBlock.setUserData(userData);
+
+			return true;
+		}
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 5 && strBlockText.startsWith("#####"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 5, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			textCursor.setBlockCharFormat(m_heading5CharFormat);
+
+			textCursor.endEditBlock();
+
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading5);
+			textBlock.setUserData(userData);
+
+			return true;
+		}
+		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 6 && strBlockText.startsWith("######"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 6, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			textCursor.setBlockCharFormat(m_heading6CharFormat);
+
+			textCursor.endEditBlock();
+
+			ZTextBlockUserData* userData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Heading6);
+			textBlock.setUserData(userData);
+
+			return true;
+		}
 
 	}
 	return false;
@@ -190,6 +250,31 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 
 bool ZTextEdit::handledEnter(QKeyEvent* event)
 {
+	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
+	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+		if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading1
+			|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading2
+			|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading3
+			|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading4
+			|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading5
+			|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading6
+			)
+		{
+			textCursor.insertBlock(QTextBlockFormat(), m_normalCharFormat);
+			return true;
+		}
+	}
+
 	return false;
 }
 
