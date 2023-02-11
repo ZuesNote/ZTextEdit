@@ -28,6 +28,7 @@ private:
 	{
 		Normal,
 		PreNumerSign,
+		PreExclam, 
 		AdjustToContents
 	};
 public:
@@ -39,6 +40,8 @@ private:
 	bool handledNumerSign(QKeyEvent* event);
 	bool handledSpace(QKeyEvent* event);
 	bool handledEnter(QKeyEvent* event);
+	bool handledExclam(QKeyEvent* event);
+	bool handledBracketLeft(QKeyEvent* event);
 
 private:
 	InputState m_inputState = InputState::Normal;

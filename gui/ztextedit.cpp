@@ -278,6 +278,76 @@ bool ZTextEdit::handledEnter(QKeyEvent* event)
 	return false;
 }
 
+bool ZTextEdit::handledExclam(QKeyEvent *event)
+{
+	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
+	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+
+	}
+
+	int nPositionInBlock = textCursor.positionInBlock();
+	int nBlockPosition = textBlock.position();
+	QString strBlockText = textBlock.text();
+
+	if (nPositionInBlock == 0)
+	{
+		textCursor.insertText("!");
+		m_inputState = InputState::PreExclam;
+		return true;		
+	}
+
+	return false;
+}
+
+bool ZTextEdit::handledBracketLeft(QKeyEvent *event)
+{
+	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
+	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+		//if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading1
+		//	|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading2
+		//	|| zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Heading3
+		//	)
+		//	return false;
+	}
+
+	int nPositionInBlock = textCursor.positionInBlock();
+	int nBlockPosition = textBlock.position();
+	QString strBlockText = textBlock.text();
+
+	Qt::KeyboardModifiers modifiers = event->modifiers();
+	if (modifiers == Qt::NoModifier)
+	{
+		if (m_inputState == InputState::PreExclam && nPositionInBlock == 1 && strBlockText.startsWith("!"))
+		{
+			textCursor.insertText("[name](./image.png)");
+			textCursor.insertBlock(QTextBlockFormat(), m_normalCharFormat);
+			textCursor.insertImage("1.png");
+			return true;
+		}
+	}
+	return false;
+}
+
 
 
 void ZTextEdit::keyPressEvent(QKeyEvent* event)
@@ -285,6 +355,10 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 	bool bHandled = false;
 
 	const int key = event->key();
+	Qt::Key keyType = static_cast<Qt::Key>(key);
+	QString keyName = event->text();
+	qDebug()<<"keyPress-----:"<<keyName;
+
 	switch (key) 
 	{
 	case Qt::Key_NumberSign: //#
@@ -292,6 +366,12 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 		break;
 	case Qt::Key_Space:
 		bHandled = handledSpace(event);
+		break;
+	case Qt::Key_Exclam: // ! 图片
+		bHandled = handledExclam(event);
+		break;
+	case Qt::Key_BracketLeft: // [
+		bHandled = handledBracketLeft(event);
 	case Qt::Key_Tab:
 		break;
 	case Qt::Key_Backtab:
