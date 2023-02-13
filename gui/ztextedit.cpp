@@ -340,11 +340,40 @@ bool ZTextEdit::handledBracketLeft(QKeyEvent *event)
 		if (m_inputState == InputState::PreExclam && nPositionInBlock == 1 && strBlockText.startsWith("!"))
 		{
 			textCursor.insertText("[name](./image.png)");
+			ZTextBlockUserData* imageTextData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::ImageText);
+			textBlock.setUserData(imageTextData);
+
 			textCursor.insertBlock(QTextBlockFormat(), m_normalCharFormat);
 			textCursor.insertImage("1.png");
+
+			QTextBlock imgBlock = textCursor.block();
+
+			ZTextBlockUserData* imageData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Image);
+			imgBlock.setUserData(imageData);
 			return true;
 		}
 	}
+	return false;
+}
+
+bool ZTextEdit::handledBackspace(QKeyEvent* event)
+{
+	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
+	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+		if (zBlockUserData->Type() == ZTextBlockUserData::TextBlockType::Image)
+			return true;
+	}
+
 	return false;
 }
 
@@ -372,6 +401,10 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 		break;
 	case Qt::Key_BracketLeft: // [
 		bHandled = handledBracketLeft(event);
+		break;
+	case Qt::Key_Backspace:
+		bHandled = handledBackspace(event);
+		break;
 	case Qt::Key_Tab:
 		break;
 	case Qt::Key_Backtab:

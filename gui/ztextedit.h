@@ -1,5 +1,5 @@
-﻿#ifndef Z_TEXT_EDIT
-#define Z_TEXT_EDIT
+﻿#ifndef ZTEXTEDIT_H
+#define ZTEXTEDIT_H
 
 #include <QTextEdit>
 
@@ -42,6 +42,7 @@ private:
 	bool handledEnter(QKeyEvent* event);
 	bool handledExclam(QKeyEvent* event);
 	bool handledBracketLeft(QKeyEvent* event);
+	bool handledBackspace(QKeyEvent* event);
 
 private:
 	InputState m_inputState = InputState::Normal;
@@ -54,4 +55,4 @@ private:
 	QTextCharFormat m_heading5CharFormat;
 	QTextCharFormat m_heading6CharFormat;
 };
-#endif // Z_TEXT_EDIT
+#endif // ZTEXTEDIT_H

@@ -1,5 +1,5 @@
-#ifndef Z_MAINWINDOW
-#define Z_MAINWINDOW
+#ifndef ZMAINWINDOW_H
+#define ZMAINWINDOW_H
 
 #include <QMainWindow>
 

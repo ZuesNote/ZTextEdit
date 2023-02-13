@@ -1,5 +1,5 @@
-﻿#ifndef Z_TEXTBLOCKUSERDATA
-#define Z_TEXTBLOCKUSERDATA
+﻿#ifndef ZTEXTBLOCKUSERDATA_H
+#define ZTEXTBLOCKUSERDATA_H
 
 #include <QTextBlockUserData>
 
@@ -16,7 +16,8 @@ public:
 		Heading5 = 5,
 		Heading6 = 6,
 		Code = 7,
-		Image = 8,
+		ImageText = 8,
+		Image = 9,
 	};
 	explicit ZTextBlockUserData(TextBlockType type);
 	virtual ~ZTextBlockUserData();
