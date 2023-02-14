@@ -1,5 +1,6 @@
 ﻿#include "ztextedit.h"
 #include "../core/ztextblockuserdata.h"
+#include "../core/ztextdocument.h"
 
 #include <QTextCursor>
 #include <QTextDocument>
@@ -15,6 +16,8 @@ ZTextEdit::ZTextEdit(QWidget *parent)
 	: QTextEdit(parent)
 {
 	initFormat();
+	QTextDocument* doc = new ZTextDocument(this);
+	setDocument(doc);
 }
 
 ZTextEdit::~ZTextEdit()

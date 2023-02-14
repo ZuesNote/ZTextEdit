@@ -8,6 +8,7 @@ QSizeF ZImageTextObject::intrinsicSize(QTextDocument* doc, int posInDocument, co
 	QImage bufferedImage = qvariant_cast<QImage>(format.property(5));
 	QSize size = bufferedImage.size();
 
+	//todo 这里应该是用配置项里的东西
 	return QSizeF(size);
 }
 
