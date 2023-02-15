@@ -347,6 +347,8 @@ bool ZTextEdit::handledBracketLeft(QKeyEvent *event)
 			textBlock.setUserData(imageTextData);
 
 			textCursor.insertBlock(QTextBlockFormat(), m_normalCharFormat);
+
+			QTextCharFormat imageCharFormat;
 			textCursor.insertImage("1.png");
 
 			QTextBlock imgBlock = textCursor.block();

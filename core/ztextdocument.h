@@ -10,12 +10,12 @@ class ZTextDocument : public QTextDocument
 public:
 	enum 
 	{ 
-		ImageTextFormat = QTextFormat::UserObject + 1,
+		ImageTextFormat = QTextFormat::UserObject + 1, //insert
 	};
 
 	enum
 	{
-		ImageProperties = QTextFormat::UserProperty + 1,
+		ImageData = QTextFormat::UserProperty + 1,
 	};
 
 public:
