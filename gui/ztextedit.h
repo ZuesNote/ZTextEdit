@@ -2,10 +2,13 @@
 #define ZTEXTEDIT_H
 
 #include <QTextEdit>
+#include <QPoint>
 
 QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
+
+class ZTextDocument;
 
 class ZTextEdit : public QTextEdit
 {
@@ -33,6 +36,7 @@ private:
 	};
 public:
 	virtual void keyPressEvent(QKeyEvent* event) override;
+	virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
 private:
 	void initFormat();
@@ -44,6 +48,13 @@ private:
 	bool handledBracketLeft(QKeyEvent* event);
 	bool handledBackspace(QKeyEvent* event);
 
+private slots:
+	void onPressEvent(const QPoint& pos);
+	void onContentsChange(int from, int charsRemoved, int charsAdded);
+
+signals:
+	void sigPressEvent(const QPoint& pos);
+
 private:
 	InputState m_inputState = InputState::Normal;
 
@@ -54,5 +65,7 @@ private:
 	QTextCharFormat m_heading4CharFormat;
 	QTextCharFormat m_heading5CharFormat;
 	QTextCharFormat m_heading6CharFormat;
+
+	ZTextDocument* m_doc = nullptr;
 };
 #endif // ZTEXTEDIT_H

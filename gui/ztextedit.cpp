@@ -16,8 +16,12 @@ ZTextEdit::ZTextEdit(QWidget *parent)
 	: QTextEdit(parent)
 {
 	initFormat();
-	QTextDocument* doc = new ZTextDocument(this);
-	setDocument(doc);
+	m_doc = new ZTextDocument(this);
+	setDocument(m_doc);
+
+	connect(this, &ZTextEdit::sigPressEvent, this, &ZTextEdit::onPressEvent);
+
+	connect(m_doc, &QTextDocument::contentsChange, this, &ZTextEdit::onContentsChange);
 }
 
 ZTextEdit::~ZTextEdit()
@@ -43,6 +47,7 @@ void ZTextEdit::initFormat()
 		font.setPixelSize(28);
 		m_heading1CharFormat.setFont(font);
 		m_heading1CharFormat.setBackground(Qt::red);
+		m_heading1CharFormat.setProperty(QTextFormat::AnchorHref, "svgBufferImage");
 	}
 	{
 		QFont font;
@@ -79,6 +84,28 @@ void ZTextEdit::initFormat()
 		font.setPixelSize(23);
 		m_heading6CharFormat.setFont(font);
 	}
+}
+
+void ZTextEdit::onPressEvent(const QPoint& pos)
+{
+	QTextFormat textFormat = m_doc->documentLayout()->formatAt(pos);
+	if (textFormat.isImageFormat())
+	{
+//		qDebug() << textFormat;
+		QTextImageFormat imgFormat = textFormat.toImageFormat();
+		qDebug() << imgFormat.name();
+	}
+}
+
+//这个用于处理关联关系的block
+void ZTextEdit::onContentsChange(int from, int charsRemoved, int charsAdded)
+{
+	//from代表的是QTextCursor绝对位置。可以通过这个东西来查找Block.
+	//charsRemoved代表的是删除的个数。
+	//charsAdded代表的是增加的个数。
+	qDebug() << from << " " << charsRemoved << " " << charsAdded;
+	QTextBlock block = m_doc->findBlock(from);
+	qDebug() << block.text() << endl;
 }
 
 bool ZTextEdit::handledNumerSign(QKeyEvent* event)
@@ -348,8 +375,11 @@ bool ZTextEdit::handledBracketLeft(QKeyEvent *event)
 
 			textCursor.insertBlock(QTextBlockFormat(), m_normalCharFormat);
 
-			QTextCharFormat imageCharFormat;
-			textCursor.insertImage("1.png");
+//			QTextCharFormat imageCharFormat;
+			QTextImageFormat imageCharFormat;
+			imageCharFormat.setName("D:\\1.png");
+			imageCharFormat.setWidth(200);
+			textCursor.insertImage(imageCharFormat);
 
 			QTextBlock imgBlock = textCursor.block();
 
@@ -425,5 +455,19 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 
 	if (!bHandled)
 		return QTextEdit::keyPressEvent(event);
+}
+
+void ZTextEdit::mouseReleaseEvent(QMouseEvent* e)
+{
+	auto block = this->document()->documentLayout()->anchorAt(e->pos());
+//	auto block1 = this->document()->documentLayout()->anchorAt(e->globalPos());
+//	auto block2 = this->document()->documentLayout()->anchorAt(e->localPos());
+//	qDebug() << block;
+//	qDebug() << block1;
+//	qDebug() << block2;
+//	QTextFormat formatAt(const QPointF & pos) const;
+//	QTextBlock blockWithMarkerAt(const QPointF & pos) const;
+	emit sigPressEvent(e->pos());
+	QTextEdit::mousePressEvent(e);
 }
 
