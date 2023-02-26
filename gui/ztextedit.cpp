@@ -412,6 +412,13 @@ bool ZTextEdit::handledBackspace(QKeyEvent* event)
 	return false;
 }
 
+bool ZTextEdit::handledDelete(QKeyEvent* event)
+{
+
+
+	return false;
+}
+
 
 
 void ZTextEdit::keyPressEvent(QKeyEvent* event)
@@ -439,6 +446,8 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 		break;
 	case Qt::Key_Backspace:
 		bHandled = handledBackspace(event);
+		break;
+	case Qt::Key_QuoteLeft: //公式的"`",但是发现一个奇怪的`·`这个符号的案件并没有监测到
 		break;
 	case Qt::Key_Tab:
 		break;

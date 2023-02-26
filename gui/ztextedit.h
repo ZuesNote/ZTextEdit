@@ -27,6 +27,8 @@ public:
 	void setDefaultHeading1Format();
 
 private:
+	//这个状态用于预处理的一些状态枚举。
+	//为了更好地判断当前用户的行为，提前做出判断一些行为
 	enum class InputState 
 	{
 		Normal,
@@ -47,6 +49,7 @@ private:
 	bool handledExclam(QKeyEvent* event);
 	bool handledBracketLeft(QKeyEvent* event);
 	bool handledBackspace(QKeyEvent* event);
+	bool handledDelete(QKeyEvent* event);
 
 private slots:
 	void onPressEvent(const QPoint& pos);
