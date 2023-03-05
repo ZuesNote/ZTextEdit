@@ -39,6 +39,7 @@ private:
 public:
 	virtual void keyPressEvent(QKeyEvent* event) override;
 	virtual void mouseReleaseEvent(QMouseEvent* e) override;
+	virtual void mouseMoveEvent(QMouseEvent* e) override;
 
 private:
 	void initFormat();

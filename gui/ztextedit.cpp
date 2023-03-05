@@ -378,13 +378,21 @@ bool ZTextEdit::handledBracketLeft(QKeyEvent *event)
 //			QTextCharFormat imageCharFormat;
 			QTextImageFormat imageCharFormat;
 			imageCharFormat.setName("D:\\1.png");
-			imageCharFormat.setWidth(200);
+			imageCharFormat.setWidth(this->width());
 			textCursor.insertImage(imageCharFormat);
 
 			QTextBlock imgBlock = textCursor.block();
 
-			ZTextBlockUserData* imageData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Image);
-			imgBlock.setUserData(imageData);
+//			ZTextBlockUserData* imageData = new ZTextBlockUserData(ZTextBlockUserData::TextBlockType::Image);
+//			imgBlock.setUserData(imageData);
+			return true;
+		}
+		else
+		{
+			//插入图片
+			QTextCharFormat imageCharFormat;
+			imageCharFormat.setAnchorHref("https://www.wps.cn");
+			textCursor.insertText("[name](https://www.wps.cn)", imageCharFormat);
 			return true;
 		}
 	}
@@ -478,5 +486,19 @@ void ZTextEdit::mouseReleaseEvent(QMouseEvent* e)
 //	QTextBlock blockWithMarkerAt(const QPointF & pos) const;
 	emit sigPressEvent(e->pos());
 	QTextEdit::mousePressEvent(e);
+}
+
+void ZTextEdit::mouseMoveEvent(QMouseEvent* e)
+{
+	QTextFormat textFormat = m_doc->documentLayout()->formatAt(e->pos());
+	if (textFormat.hasProperty(QTextFormat::AnchorHref))
+	{
+		QVariant var = textFormat.property(QTextFormat::AnchorHref);
+		qDebug() << var.toString();
+//		QCursor cur(Qt::ArrowCursor);//这个不管用
+//		setCursor(cur);
+//		return;
+	}
+	QTextEdit::mouseMoveEvent(e);
 }
 

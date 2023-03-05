@@ -14,3 +14,4 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Debug -G "Visual Studio 17 2022"
 - GPLV3
 - LGPLV3
 
+# Support
