@@ -497,14 +497,15 @@ void ZTextEdit::mouseMoveEvent(QMouseEvent* e)
 		QVariant var = textFormat.property(QTextFormat::AnchorHref);
 		qDebug() << var.toString();
 //		this->setCursor
-//		qApp->setOverrideCursor(Qt::WaitCursor); //这个管用
+//		qApp->setOverrideCursor(Qt::WaitCursor); //这个管用，但是不合适
 //		QCursor cur(Qt::ArrowCursor);//这个不管用
 //		setCursor(cur);
 //		return;
+		this->viewport()->setCursor(Qt::WaitCursor);
 	}
 	else
 	{
-
+		this->viewport()->setCursor(Qt::IBeamCursor);
 	}
 	QTextEdit::mouseMoveEvent(e);
 }
