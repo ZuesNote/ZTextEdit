@@ -8,6 +8,7 @@
 #include <QTextLayout>
 #include <QAbstractTextDocumentLayout>
 #include <QKeyEvent>
+#include <QApplication>
 
 #include <QDebug>
 
@@ -495,9 +496,15 @@ void ZTextEdit::mouseMoveEvent(QMouseEvent* e)
 	{
 		QVariant var = textFormat.property(QTextFormat::AnchorHref);
 		qDebug() << var.toString();
+//		this->setCursor
+//		qApp->setOverrideCursor(Qt::WaitCursor); //这个管用
 //		QCursor cur(Qt::ArrowCursor);//这个不管用
 //		setCursor(cur);
 //		return;
+	}
+	else
+	{
+
 	}
 	QTextEdit::mouseMoveEvent(e);
 }
