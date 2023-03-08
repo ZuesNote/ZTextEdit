@@ -40,7 +40,7 @@ public:
 	virtual void keyPressEvent(QKeyEvent* event) override;
 	virtual void mouseReleaseEvent(QMouseEvent* e) override;
 	virtual void mouseMoveEvent(QMouseEvent* e) override;
-
+	virtual bool eventFilter(QObject*, QEvent*) override;
 private:
 	void initFormat();
 
@@ -54,7 +54,7 @@ private:
 
 private slots:
 	void onPressEvent(const QPoint& pos);
-	void onContentsChange(int from, int charsRemoved, int charsAdded);
+	void onContentsChange(int position, int charsRemoved, int charsAdded);
 
 signals:
 	void sigPressEvent(const QPoint& pos);

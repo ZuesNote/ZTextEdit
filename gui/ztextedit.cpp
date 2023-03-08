@@ -22,7 +22,7 @@ ZTextEdit::ZTextEdit(QWidget *parent)
 
 	connect(this, &ZTextEdit::sigPressEvent, this, &ZTextEdit::onPressEvent);
 
-	connect(m_doc, &QTextDocument::contentsChange, this, &ZTextEdit::onContentsChange);
+	connect(m_doc, &ZTextDocument::contentsChange, this, &ZTextEdit::onContentsChange);
 }
 
 ZTextEdit::~ZTextEdit()
@@ -99,14 +99,109 @@ void ZTextEdit::onPressEvent(const QPoint& pos)
 }
 
 //这个用于处理关联关系的block
-void ZTextEdit::onContentsChange(int from, int charsRemoved, int charsAdded)
+void ZTextEdit::onContentsChange(int position, int charsRemoved, int charsAdded)
 {
-	//from代表的是QTextCursor绝对位置。可以通过这个东西来查找Block.
+	//position代表的是QTextCursor绝对位置。可以通过这个东西来查找Block.
 	//charsRemoved代表的是删除的个数。
 	//charsAdded代表的是增加的个数。
-	qDebug() << from << " " << charsRemoved << " " << charsAdded;
-	QTextBlock block = m_doc->findBlock(from);
-	qDebug() << block.text() << endl;
+	qDebug() << position << " " << charsRemoved << " " << charsAdded;
+	QTextBlock block = m_doc->findBlock(position);
+	qDebug() << textCursor().position() << " " << charsRemoved << " " << charsAdded;
+//	qDebug() << block.text() << endl;
+/*
+	if ((charsAdded - charsRemoved) > 0) {
+		QTextCursor c(textCursor());
+		c.setPosition(from);
+		c.setPosition(from + charsAdded, QTextCursor::KeepAnchor);
+		qDebug() << "Added: " << charsAdded << " (" << c.selectedText() << ")";
+	}
+	if ((charsRemoved - charsAdded) > 0)
+	{
+		undo();
+		QTextCursor c(textCursor());
+		c.setPosition(from);
+		c.setPosition(from + charsRemoved, QTextCursor::KeepAnchor);
+		qDebug() << "Removed: " << charsRemoved << " (" << c.selectedText() << ")";
+		redo();
+	}
+*/
+
+	if (charsAdded > charsRemoved)
+	{
+		QTextCursor cursor = textCursor();
+
+		if (charsRemoved == 0)
+		{
+			cursor.setPosition(position);
+			cursor.setPosition(position + charsAdded - charsRemoved, QTextCursor::KeepAnchor);
+			QString text = cursor.selectedText();
+			qDebug() << text << endl;
+		}
+		else
+		{
+			//修改之后的位置,
+			int posNow = cursor.position();
+			cursor.setPosition(position);
+			cursor.setPosition(posNow, QTextCursor::KeepAnchor);
+
+			//新加入的字符.
+			QString textAdded = cursor.selectedText();
+			qDebug() << textAdded << endl;
+			int removed = textAdded.size() - (charsAdded - charsRemoved);
+
+//			doc.remove(position, removed);
+//			doc.insert(position, textAdded);
+		}
+
+
+		//替换
+		//ui->textEdit->document()->blockSignals(true);
+		//cursor.setPosition(position);
+		//int end = (position + charsAdded) >= ui->textEdit->document()->characterCount() ? (position + charsAdded - 1) : (position + charsAdded);
+		//cursor.setPosition(end, QTextCursor::KeepAnchor);
+		//QString text = cursor.selectedText();
+		//text.replace(QRegExp("[^\\n]"), inputMask);
+		//cursor.insertText(text);
+		//ui->textEdit->document()->blockSignals(false);
+	}
+	//修改
+	else if (charsAdded == charsRemoved)
+	{
+		QTextCursor cursor = textCursor();
+		cursor.setPosition(position);
+		cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
+		QString text = cursor.selectedText();
+		qDebug() << text << endl;
+		//doc.replace(position, text.length(), text);
+
+		//替换
+		//ui->textEdit->document()->blockSignals(true);
+		//text.replace(QRegExp("[^\\n]"), inputMask);
+		//cursor.insertText(text);
+		//ui->textEdit->document()->blockSignals(false);
+	}
+	//删除
+	else
+	{
+		//doc.remove(position, charsRemoved);
+		if (charsAdded > 0)
+		{
+			QTextCursor cursor = textCursor();
+			cursor.setPosition(position);
+			cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
+			QString text = cursor.selectedText();
+			qDebug() << text << endl;
+			//doc.insert(position, text);
+
+			//替换
+			//ui->textEdit->document()->blockSignals(true);
+			//text.replace(QRegExp("[^\\n]"), inputMask);
+			//cursor.insertText(text);
+			//ui->textEdit->document()->blockSignals(false);
+		}
+	}
+
+	qDebug() << "----------------------------";
 }
 
 bool ZTextEdit::handledNumerSign(QKeyEvent* event)
@@ -508,5 +603,22 @@ void ZTextEdit::mouseMoveEvent(QMouseEvent* e)
 		this->viewport()->setCursor(Qt::IBeamCursor);
 	}
 	QTextEdit::mouseMoveEvent(e);
+}
+
+bool ZTextEdit::eventFilter(QObject* obj , QEvent* event)
+{
+	if (obj == this)
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+
+		}
+//		QKeyEvent* keyEvent = qobject_cast<QKeyEvent*>(event);
+//		const int key = event->key();
+//		Qt::Key keyType = static_cast<Qt::Key>(key);
+//		QString keyName = event->text();
+//		qDebug() << "keyPress-----:" << keyName;
+	}
+	return QTextEdit::eventFilter(obj, event);
 }
 
