@@ -22,7 +22,7 @@ ZTextEdit::ZTextEdit(QWidget *parent)
 
 	connect(this, &ZTextEdit::sigPressEvent, this, &ZTextEdit::onPressEvent);
 
-	connect(m_doc, &ZTextDocument::contentsChange, this, &ZTextEdit::onContentsChange);
+//	connect(m_doc, &ZTextDocument::contentsChange, this, &ZTextEdit::onContentsChange);
 }
 
 ZTextEdit::~ZTextEdit()
@@ -85,6 +85,14 @@ void ZTextEdit::initFormat()
 		font.setPixelSize(23);
 		m_heading6CharFormat.setFont(font);
 	}
+
+	{
+		QFont font;
+		font.setBold(true);
+		font.setPixelSize(10);
+		m_codeCharFormat.setBackground(Qt::green);
+		m_codeCharFormat.setFont(font);
+	}
 }
 
 void ZTextEdit::onPressEvent(const QPoint& pos)
@@ -126,80 +134,80 @@ void ZTextEdit::onContentsChange(int position, int charsRemoved, int charsAdded)
 	}
 */
 
-	if (charsAdded > charsRemoved)
-	{
-		QTextCursor cursor = textCursor();
-
-		if (charsRemoved == 0)
-		{
-			cursor.setPosition(position);
-			cursor.setPosition(position + charsAdded - charsRemoved, QTextCursor::KeepAnchor);
-			QString text = cursor.selectedText();
-			qDebug() << text << endl;
-		}
-		else
-		{
-			//修改之后的位置,
-			int posNow = cursor.position();
-			cursor.setPosition(position);
-			cursor.setPosition(posNow, QTextCursor::KeepAnchor);
-
-			//新加入的字符.
-			QString textAdded = cursor.selectedText();
-			qDebug() << textAdded << endl;
-			int removed = textAdded.size() - (charsAdded - charsRemoved);
-
-//			doc.remove(position, removed);
-//			doc.insert(position, textAdded);
-		}
-
-
-		//替换
-		//ui->textEdit->document()->blockSignals(true);
-		//cursor.setPosition(position);
-		//int end = (position + charsAdded) >= ui->textEdit->document()->characterCount() ? (position + charsAdded - 1) : (position + charsAdded);
-		//cursor.setPosition(end, QTextCursor::KeepAnchor);
-		//QString text = cursor.selectedText();
-		//text.replace(QRegExp("[^\\n]"), inputMask);
-		//cursor.insertText(text);
-		//ui->textEdit->document()->blockSignals(false);
-	}
-	//修改
-	else if (charsAdded == charsRemoved)
-	{
-		QTextCursor cursor = textCursor();
-		cursor.setPosition(position);
-		cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
-		QString text = cursor.selectedText();
-		qDebug() << text << endl;
-		//doc.replace(position, text.length(), text);
-
-		//替换
-		//ui->textEdit->document()->blockSignals(true);
-		//text.replace(QRegExp("[^\\n]"), inputMask);
-		//cursor.insertText(text);
-		//ui->textEdit->document()->blockSignals(false);
-	}
-	//删除
-	else
-	{
-		//doc.remove(position, charsRemoved);
-		if (charsAdded > 0)
-		{
-			QTextCursor cursor = textCursor();
-			cursor.setPosition(position);
-			cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
-			QString text = cursor.selectedText();
-			qDebug() << text << endl;
-			//doc.insert(position, text);
-
-			//替换
-			//ui->textEdit->document()->blockSignals(true);
-			//text.replace(QRegExp("[^\\n]"), inputMask);
-			//cursor.insertText(text);
-			//ui->textEdit->document()->blockSignals(false);
-		}
-	}
+//	if (charsAdded > charsRemoved)
+//	{
+//		QTextCursor cursor = textCursor();
+//
+//		if (charsRemoved == 0)
+//		{
+//			cursor.setPosition(position);
+//			cursor.setPosition(position + charsAdded - charsRemoved, QTextCursor::KeepAnchor);
+//			QString text = cursor.selectedText();
+//			qDebug() << text << endl;
+//		}
+//		else
+//		{
+//			//修改之后的位置,
+//			int posNow = cursor.position();
+//			cursor.setPosition(position);
+//			cursor.setPosition(posNow, QTextCursor::KeepAnchor);
+//
+//			//新加入的字符.
+//			QString textAdded = cursor.selectedText();
+//			qDebug() << textAdded << endl;
+//			int removed = textAdded.size() - (charsAdded - charsRemoved);
+//
+////			doc.remove(position, removed);
+////			doc.insert(position, textAdded);
+//		}
+//
+//
+//		//替换
+//		//ui->textEdit->document()->blockSignals(true);
+//		//cursor.setPosition(position);
+//		//int end = (position + charsAdded) >= ui->textEdit->document()->characterCount() ? (position + charsAdded - 1) : (position + charsAdded);
+//		//cursor.setPosition(end, QTextCursor::KeepAnchor);
+//		//QString text = cursor.selectedText();
+//		//text.replace(QRegExp("[^\\n]"), inputMask);
+//		//cursor.insertText(text);
+//		//ui->textEdit->document()->blockSignals(false);
+//	}
+//	//修改
+//	else if (charsAdded == charsRemoved)
+//	{
+//		QTextCursor cursor = textCursor();
+//		cursor.setPosition(position);
+//		cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
+//		QString text = cursor.selectedText();
+//		qDebug() << text << endl;
+//		//doc.replace(position, text.length(), text);
+//
+//		//替换
+//		//ui->textEdit->document()->blockSignals(true);
+//		//text.replace(QRegExp("[^\\n]"), inputMask);
+//		//cursor.insertText(text);
+//		//ui->textEdit->document()->blockSignals(false);
+//	}
+//	//删除
+//	else
+//	{
+//		//doc.remove(position, charsRemoved);
+//		if (charsAdded > 0)
+//		{
+//			QTextCursor cursor = textCursor();
+//			cursor.setPosition(position);
+//			cursor.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
+//			QString text = cursor.selectedText();
+//			qDebug() << text << endl;
+//			//doc.insert(position, text);
+//
+//			//替换
+//			//ui->textEdit->document()->blockSignals(true);
+//			//text.replace(QRegExp("[^\\n]"), inputMask);
+//			//cursor.insertText(text);
+//			//ui->textEdit->document()->blockSignals(false);
+//		}
+//	}
 
 	qDebug() << "----------------------------";
 }
@@ -523,6 +531,53 @@ bool ZTextEdit::handledDelete(QKeyEvent* event)
 	return false;
 }
 
+bool ZTextEdit::handledQuoteLeft(QKeyEvent* event)
+{
+	bool bHandled = false;
+	QTextCursor textCursor = this->textCursor();
+	if (textCursor.isNull())
+		return false;
+
+	QTextBlock textBlock = textCursor.block();
+	if (!textBlock.isValid())
+		return false;
+
+	QTextBlockUserData* blockUserData = textBlock.userData();
+	ZTextBlockUserData* zBlockUserData = static_cast<ZTextBlockUserData*>(blockUserData);
+	if (zBlockUserData != nullptr)
+	{
+
+	}
+
+	int nPositionInBlock = textCursor.positionInBlock();
+	int nBlockPosition = textBlock.position();
+	int textCursorPosition = textCursor.position();
+	QChar chChar = m_doc->characterAt(textCursorPosition);
+	QChar chNextChar;
+	QChar chPreChar;
+	if (textCursorPosition - 1 > 0)
+	{
+		chPreChar = m_doc->characterAt(textCursorPosition - 1);
+	}
+	if (textCursorPosition < m_doc->characterCount())
+	{
+		chNextChar = m_doc->characterAt(textCursorPosition + 1);
+	}
+	QString strBlockText = textBlock.text();
+
+	Qt::KeyboardModifiers modifiers = event->modifiers();
+	if (modifiers == Qt::NoModifier)
+	{
+		textCursor.insertText("''", m_codeCharFormat);
+		int nCurPos = textCursor.position();
+		textCursor.setPosition(nCurPos - 1);
+		this->setTextCursor(textCursor); //移动到``的中间位置
+		return true;
+	}
+
+	return bHandled;
+}
+
 
 
 void ZTextEdit::keyPressEvent(QKeyEvent* event)
@@ -552,6 +607,7 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 		bHandled = handledBackspace(event);
 		break;
 	case Qt::Key_QuoteLeft: //公式的"`",但是发现一个奇怪的`·`这个符号的案件并没有监测到
+		bHandled = handledQuoteLeft(event);
 		break;
 	case Qt::Key_Tab:
 		break;

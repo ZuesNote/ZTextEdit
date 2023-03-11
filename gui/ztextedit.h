@@ -41,6 +41,7 @@ public:
 	virtual void mouseReleaseEvent(QMouseEvent* e) override;
 	virtual void mouseMoveEvent(QMouseEvent* e) override;
 	virtual bool eventFilter(QObject*, QEvent*) override;
+	//virtual void inputMethodEvent(QInputMethodEvent*) override; //处理中文输入的
 private:
 	void initFormat();
 
@@ -51,6 +52,7 @@ private:
 	bool handledBracketLeft(QKeyEvent* event);
 	bool handledBackspace(QKeyEvent* event);
 	bool handledDelete(QKeyEvent* event);
+	bool handledQuoteLeft(QKeyEvent* event);
 
 private slots:
 	void onPressEvent(const QPoint& pos);
@@ -69,6 +71,8 @@ private:
 	QTextCharFormat m_heading4CharFormat;
 	QTextCharFormat m_heading5CharFormat;
 	QTextCharFormat m_heading6CharFormat;
+
+	QTextCharFormat m_codeCharFormat;
 
 	ZTextDocument* m_doc = nullptr;
 };
