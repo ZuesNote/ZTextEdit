@@ -555,23 +555,42 @@ bool ZTextEdit::handledQuoteLeft(QKeyEvent* event)
 	QChar chChar = m_doc->characterAt(textCursorPosition);
 	QChar chNextChar;
 	QChar chPreChar;
-	if (textCursorPosition - 1 > 0)
+	int nChCount = m_doc->characterCount();
+	if (nChCount == 3)
+	{
+		QChar ch0 = m_doc->characterAt(0);
+		QChar ch1 = m_doc->characterAt(1);
+		QChar ch2 = m_doc->characterAt(2);
+		qDebug() << ch0 << ch1 << ch2;
+	}
+	if (textCursorPosition - 1 >= 0)
 	{
 		chPreChar = m_doc->characterAt(textCursorPosition - 1);
-	}
-	if (textCursorPosition < m_doc->characterCount())
-	{
-		chNextChar = m_doc->characterAt(textCursorPosition + 1);
 	}
 	QString strBlockText = textBlock.text();
 
 	Qt::KeyboardModifiers modifiers = event->modifiers();
 	if (modifiers == Qt::NoModifier)
 	{
-		textCursor.insertText("''", m_codeCharFormat);
-		int nCurPos = textCursor.position();
-		textCursor.setPosition(nCurPos - 1);
-		this->setTextCursor(textCursor); //移动到``的中间位置
+		if (!chPreChar.isNull() && !chChar.isNull() && chPreChar == chChar && chPreChar == '`')
+		{
+			textCursor.setPosition(textCursorPosition + 1);
+			textCursor.insertText("`");
+			textCursor.insertBlock();
+			textCursor.insertBlock();
+			textCursor.insertText("```", m_codeCharFormat);
+			textCursor.setPosition(textCursor.position() - 4);
+			this->setTextCursor(textCursor);
+		}
+		else
+		{
+			//todo 前面有一个`,这时候再添加一个`，这时候也得处理。
+			textCursor.insertText("``", m_codeCharFormat);
+			int nCurPos = textCursor.position();
+			textCursor.setPosition(nCurPos - 1);
+			this->setTextCursor(textCursor); //移动到``的中间位置
+		}
+
 		return true;
 	}
 
