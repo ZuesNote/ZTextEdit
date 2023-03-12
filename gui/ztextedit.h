@@ -34,6 +34,9 @@ private:
 		Normal,
 		PreNumerSign,
 		PreExclam, 
+		PreMinus,
+		PreDecimal,
+		PreGreater,
 		AdjustToContents
 	};
 public:
@@ -53,6 +56,8 @@ private:
 	bool handledBackspace(QKeyEvent* event);
 	bool handledDelete(QKeyEvent* event);
 	bool handledQuoteLeft(QKeyEvent* event);
+	bool handledMinus(QKeyEvent* event);
+	bool handledGreater(QKeyEvent* event);
 
 private slots:
 	void onPressEvent(const QPoint& pos);
@@ -73,6 +78,7 @@ private:
 	QTextCharFormat m_heading6CharFormat;
 
 	QTextCharFormat m_codeCharFormat;
+	QTextCharFormat m_lessCharFormat;
 
 	ZTextDocument* m_doc = nullptr;
 };

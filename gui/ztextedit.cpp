@@ -253,11 +253,31 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 
 	int nPositionInBlock = textCursor.positionInBlock();
 	int nBlockPosition = textBlock.position();
+	int textCursorPosition = textCursor.position();
 	QString strBlockText = textBlock.text();
 
 	Qt::KeyboardModifiers modifiers = event->modifiers();
 	if (modifiers == Qt::NoModifier)
 	{
+		if (m_inputState == InputState::PreGreater && nPositionInBlock == 1 && strBlockText.startsWith(">"))
+		{
+			m_inputState = InputState::Normal;
+
+			textCursor.beginEditBlock();
+
+			textCursor.setPosition(nBlockPosition);
+			textCursor.setPosition(nBlockPosition + 1, QTextCursor::KeepAnchor);
+			textCursor.removeSelectedText();
+
+			//setBlockFormat必须得清空以后才能设置成功
+			QTextCharFormat lessFormat;
+			lessFormat.setBackground(Qt::blue);
+			textCursor.setBlockCharFormat(lessFormat);
+
+			textCursor.endEditBlock();
+
+			return true;
+		}
 		if (m_inputState == InputState::PreNumerSign && nPositionInBlock == 1 && strBlockText.startsWith("#"))
 		{
 			m_inputState = InputState::Normal;
@@ -377,6 +397,89 @@ bool ZTextEdit::handledSpace(QKeyEvent* event)
 
 			return true;
 		}
+
+		// - 
+		if (m_inputState == InputState::PreMinus && nPositionInBlock == 1 && strBlockText.startsWith("-"))
+		{
+			m_inputState = InputState::Normal;
+
+			//- [ ]
+			//- [X]
+			QChar chBracketLeft = m_doc->characterAt(textCursorPosition);
+			QChar chSpace;
+			QChar chBracketRight;
+			if (textCursorPosition + 1 < m_doc->characterCount())
+			{
+				chSpace = m_doc->characterAt(textCursorPosition + 1);
+			}
+			if (textCursorPosition + 2 < m_doc->characterCount())
+			{
+				chBracketRight = m_doc->characterAt(textCursorPosition + 2);
+			}
+
+
+			if (chBracketLeft == QChar('[') && chSpace == QChar(' ') && chBracketRight == QChar(']')) //todo这里不完善，应该判断后面有没有[x]或者[]
+			{
+				textCursor.beginEditBlock();
+
+				textCursor.setPosition(nBlockPosition);
+				textCursor.setPosition(nBlockPosition + 4,  QTextCursor::KeepAnchor);
+				textCursor.removeSelectedText();
+
+				QTextBlockFormat format;
+				format.setMarker(QTextBlockFormat::MarkerType::Unchecked);
+//				textCursor.setBlockFormat(format);
+				textCursor.insertBlock(format);
+
+				textCursor.endEditBlock();
+			}
+			else
+			{
+				textCursor.beginEditBlock();
+
+				textCursor.setPosition(nBlockPosition);
+				textCursor.setPosition(nBlockPosition + 1, QTextCursor::KeepAnchor);
+
+				textCursor.createList(QTextListFormat::ListCircle);
+				textCursor.removeSelectedText();
+
+				//setBlockFormat必须得清空以后才能设置成功
+				//textCursor.setBlockCharFormat(m_heading6CharFormat);
+
+				textCursor.endEditBlock();
+			}
+
+			return true;
+		}
+
+		// 1.后面加	个空格
+		if (nPositionInBlock == 2)
+		{
+			QChar chChar = m_doc->characterAt(textCursorPosition);
+			QChar ch0 = m_doc->characterAt(textCursorPosition - 1);
+			QChar ch1 = m_doc->characterAt(textCursorPosition - 2);
+			int intValue = QString(ch1).toInt();
+			if (intValue >= 1 && intValue <= 9 && ch0 == QChar('.'))
+			{
+				textCursor.beginEditBlock();
+
+				textCursor.setPosition(nBlockPosition);
+				textCursor.setPosition(nBlockPosition + 2, QTextCursor::KeepAnchor);
+
+				textCursor.createList(QTextListFormat::ListDecimal);
+				textCursor.removeSelectedText();
+
+				//setBlockFormat必须得清空以后才能设置成功
+				//textCursor.setBlockCharFormat(m_heading6CharFormat);
+
+				textCursor.endEditBlock();
+			}
+			QChar ch2 = m_doc->characterAt(2);
+			qDebug() << ch0 << ch1 << ch2;
+
+			return true; 
+		}
+
 
 	}
 	return false;
@@ -597,6 +700,42 @@ bool ZTextEdit::handledQuoteLeft(QKeyEvent* event)
 	return bHandled;
 }
 
+bool ZTextEdit::handledMinus(QKeyEvent* event)
+{
+	//todo 获取block的状态
+	QTextCursor textCursor = this->textCursor();
+	QTextBlock textBlock = textCursor.block();
+
+	int nPositionInBlock = textCursor.positionInBlock();
+	QString strBlockText = textBlock.text();
+
+	if (nPositionInBlock == 0)
+	{
+		textCursor.insertText("-");
+		m_inputState = InputState::PreMinus;
+		return true;
+	}
+	return false;
+}
+
+bool ZTextEdit::handledGreater(QKeyEvent* event)
+{
+	//todo 获取block的状态
+	QTextCursor textCursor = this->textCursor();
+	QTextBlock textBlock = textCursor.block();
+
+	int nPositionInBlock = textCursor.positionInBlock();
+	QString strBlockText = textBlock.text();
+
+	if (nPositionInBlock == 0)
+	{
+		textCursor.insertText(">");
+		m_inputState = InputState::PreGreater;
+		return true;
+	}
+	return false;
+}
+
 
 
 void ZTextEdit::keyPressEvent(QKeyEvent* event)
@@ -625,8 +764,14 @@ void ZTextEdit::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Backspace:
 		bHandled = handledBackspace(event);
 		break;
-	case Qt::Key_QuoteLeft: //公式的"`",但是发现一个奇怪的`·`这个符号的案件并没有监测到
+	case Qt::Key_QuoteLeft: //公式的"`"
 		bHandled = handledQuoteLeft(event);
+		break;
+	case Qt::Key_Minus: // 列表的 -
+		bHandled = handledMinus(event);
+		break;
+	case Qt::Key_Greater: // >
+		bHandled = handledGreater(event);
 		break;
 	case Qt::Key_Tab:
 		break;
